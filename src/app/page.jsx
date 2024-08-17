@@ -96,7 +96,6 @@ const Dashboard = () => {
       return '300px';
     };
 
-    // Set initial height
     setChartHeight(getChartHeight());
 
     // Handle resize event

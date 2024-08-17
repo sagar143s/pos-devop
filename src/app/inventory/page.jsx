@@ -183,7 +183,7 @@ const Inventory = () => {
           </Button>
           <Button onClick={confirmDelete} color="secondary">
             Delete
-          </Button>
+          </Button> 
         </DialogActions>
       </Dialog>
 
