@@ -100,20 +100,19 @@ const Inventory = () => {
           Inventory
         </Typography>
         <Box marginTop={2}>
-        <Button 
-  variant="contained"  
-  onClick={() => setOpenDialog(true)}
-  startIcon={isSmallScreen ? <AddIcon /> : null}
-  sx={{
-    background: "#530966",
-    "&:hover": {
-      backgroundColor: "#b104de",  // Red color on hover
-    },
-  }}
->
-  {!isSmallScreen && "Add New Item"}
-</Button>
-
+          <Button 
+            variant="contained"  
+            onClick={() => setOpenDialog(true)}
+            startIcon={isSmallScreen ? <AddIcon /> : null}
+            sx={{
+              background: "#530966",
+              "&:hover": {
+                backgroundColor: "#b104de",  // Red color on hover
+              },
+            }}
+          >
+            {!isSmallScreen && "Add New Item"}
+          </Button>
         </Box>
       </Box>
       <Paper elevation={6} style={{ padding: "0px", backgroundColor: "#ffffff",boxShadow:"none" }}>
@@ -175,7 +174,7 @@ const Inventory = () => {
       <Dialog open={isDelete} onClose={cancelDelete}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete the item "{currentItem?.name}"?
+          Are you sure you want to delete the item &quot;{currentItem?.name}&quot;?
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelDelete} color="primary">
