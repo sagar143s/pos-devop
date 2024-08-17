@@ -160,7 +160,7 @@ const Dashboard = () => {
 
       <Box marginTop={3}>
         <Typography variant="h5" gutterBottom>
-          Today's Orders
+          Today&apos;s Orders
         </Typography>
         <Paper elevation={6} style={{ padding: "16px", backgroundColor: "#ffffff" }}>
           <TableContainer>
