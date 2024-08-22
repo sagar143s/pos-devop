@@ -2,106 +2,96 @@
 import React, { useState } from 'react';
 import {
   Box, Typography, TextField, Button, Accordion, AccordionSummary, AccordionDetails, Grid,
-  FormControl, InputLabel, Select, MenuItem, Switch, IconButton, InputAdornment
+  FormControl, InputLabel, Select, MenuItem, IconButton, Snackbar, Alert, InputAdornment,
+  Paper, Divider, FormControlLabel, Switch
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import FlagIcon from '@mui/icons-material/Flag';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import SubscriptionIcon from '@mui/icons-material/CardMembership';
-import PaletteIcon from '@mui/icons-material/Palette';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import LanguageIcon from '@mui/icons-material/Language';
-import DownloadIcon from '@mui/icons-material/Download';
-import FormControlLabel from '@mui/material/FormControlLabel';
-
-
-const countryOptions = [
-  { code: 'US', name: 'United States', currency: 'USD', timeZones: ['PST', 'CST', 'EST'] },
-  { code: 'AE', name: 'United Arab Emirates', currency: 'AED', timeZones: ['GST'] },
-  { code: 'GB', name: 'United Kingdom', currency: 'GBP', timeZones: ['GMT'] },
-  // Add more countries as needed
-];
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import PasswordIcon from '@mui/icons-material/Password';
 
 const SettingsPage = () => {
   const [expanded, setExpanded] = useState(false);
-  const [posSettings, setPosSettings] = useState({
-    receiptPrint: 'thermal',
-    currency: 'AED',
-  });
-
-  const [companyDetails, setCompanyDetails] = useState({
-    name: '',
-    address: '',
-    phone: '',
-    email: '',
-  });
-
-  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [timeZone, setTimeZone] = useState('');
-  const [currency, setCurrency] = useState('');
-  const [subscription, setSubscription] = useState({
-    plan: 'Basic',
-    renewalDate: '2024-08-20',
-    status: 'Active'
-  });
-
-  const [dashboardSettings, setDashboardSettings] = useState({
-    theme: 'light',
-    defaultView: 'summary',
-    notificationsEnabled: true,
-    dataExportFormat: 'CSV',
-    language: 'English',
-    userRoles: [],
-  });
+  const [branches, setBranches] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState('');
+  const [branchDetails, setBranchDetails] = useState({ id: '', code: '', address: '' });
+  const [staffs, setStaffs] = useState([]);
+  const [newStaff, setNewStaff] = useState({ userId: '', password: '', employeeId: '', staffCard: '' });
+  const [admins, setAdmins] = useState([]);
+  const [newAdmin, setNewAdmin] = useState({ name: '', email: '', password: '' });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [role, setRole] = useState('Cashier');
+  const [isActive, setIsActive] = useState(true);
 
   const handlePanelChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  const handlePosChange = (e) => {
-    setPosSettings({
-      ...posSettings,
+  const handleBranchChange = (e) => {
+    const branchId = e.target.value;
+    setSelectedBranch(branchId);
+  };
+
+  const handleBranchDetailsChange = (e) => {
+    setBranchDetails({
+      ...branchDetails,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleCompanyChange = (e) => {
-    setCompanyDetails({
-      ...companyDetails,
-      [e.target.name]: e.target.value,
-    });
+  const handleAddOrUpdateBranch = () => {
+    if (branchDetails.id) {
+      // Update existing branch
+      setBranches(branches.map(branch =>
+        branch.id === branchDetails.id ? branchDetails : branch
+      ));
+      setSnackbarMessage('Branch updated successfully');
+    } else {
+      // Add new branch
+      setBranches([...branches, { ...branchDetails, id: branches.length + 1 }]);
+      setSnackbarMessage('Branch added successfully');
+    }
+    setBranchDetails({ id: '', code: '', address: '' });
+    setSnackbarOpen(true);
   };
 
-  const handleCountryChange = (e) => {
-    const countryCode = e.target.value;
-    const selected = countryOptions.find(country => country.code === countryCode);
-    setSelectedCountry(countryCode);
-    setCurrency(selected?.currency || '');
-    setTimeZone('');
+  const handleEditBranch = (branch) => {
+    setBranchDetails(branch);
   };
 
-  const handleDashboardChange = (e) => {
-    setDashboardSettings({
-      ...dashboardSettings,
-      [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value,
-    });
+  const handleAddStaff = () => {
+    if (selectedBranch) {
+      setStaffs([...staffs, { ...newStaff, id: staffs.length + 1, branch: selectedBranch, role, isActive }]);
+      setNewStaff({ userId: '', password: '', employeeId: '', staffCard: '' });
+      setSnackbarMessage('Staff added successfully');
+      setSnackbarOpen(true);
+    } else {
+      setSnackbarMessage('Please select a branch');
+      setSnackbarOpen(true);
+    }
   };
 
-  const handleSave = () => {
-    // Save settings logic
-    console.log('POS Settings:', posSettings);
-    console.log('Company Details:', companyDetails);
-    console.log('Country:', selectedCountry);
-    console.log('Time Zone:', timeZone);
-    console.log('Currency:', currency);
-    console.log('Subscription:', subscription);
-    console.log('Dashboard Settings:', dashboardSettings);
+  const handleDeleteBranch = (id) => {
+    setBranches(branches.filter(branch => branch.id !== id));
+    setSnackbarMessage('Branch deleted successfully');
+    setSnackbarOpen(true);
   };
 
-  const selectedCountryDetails = countryOptions.find(country => country.code === selectedCountry);
+  const handleDeleteStaff = (id) => {
+    setStaffs(staffs.filter(staff => staff.id !== id));
+    setSnackbarMessage('Staff deleted successfully');
+    setSnackbarOpen(true);
+  };
+
+  const handleRoleChange = (event) => {
+    setRole(event.target.value);
+  };
+
+  const handleActiveChange = (event) => {
+    setIsActive(event.target.checked);
+  };
 
   return (
     <Box sx={{ padding: { xs: 2, md: 4 }, maxWidth: 1200, margin: 'auto' }}>
@@ -109,337 +99,330 @@ const SettingsPage = () => {
         Settings
       </Typography>
 
-      {/* POS Settings */}
+      {/* Branch Management */}
       <Accordion expanded={expanded === 'panel1'} onChange={handlePanelChange('panel1')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1-content"
           id="panel1-header"
         >
-          <Typography variant="h6">POS Settings</Typography>
+          <Typography variant="h6">Branch Management</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Receipt Printer</InputLabel>
-                <Select
-                  name="receiptPrint"
-                  value={posSettings.receiptPrint}
-                  onChange={handlePosChange}
-                  label="Receipt Printer"
-                >
-                  <MenuItem value="thermal">Thermal</MenuItem>
-                  <MenuItem value="inkjet">Inkjet</MenuItem>
-                </Select>
-              </FormControl>
+              <TextField
+                fullWidth
+                label="Branch Code"
+                name="code"
+                value={branchDetails.code}
+                onChange={handleBranchDetailsChange}
+                placeholder="Enter branch code"
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+              />
             </Grid>
-
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Currency</InputLabel>
-                <Select
-                  name="currency"
-                  value={posSettings.currency}
-                  onChange={handlePosChange}
-                  label="Currency"
-                >
-                  <MenuItem value="AED">AED</MenuItem>
-                  <MenuItem value="USD">USD</MenuItem>
-                  <MenuItem value="EUR">EUR</MenuItem>
-                </Select>
-              </FormControl>
+              <TextField
+                fullWidth
+                label="Branch Address"
+                name="address"
+                value={branchDetails.address}
+                onChange={handleBranchDetailsChange}
+                placeholder="Enter branch address"
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12} sx={{ textAlign: 'right' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddOrUpdateBranch}
+                startIcon={<AddIcon />}
+              >
+                {branchDetails.id ? 'Update Branch' : 'Add Branch'}
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Existing Branches</Typography>
+              <Grid container spacing={2}>
+                {branches.map((branch) => (
+                  <Grid item xs={12} md={6} key={branch.id}>
+                    <Box
+                      sx={{
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        padding: '16px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        backgroundColor: '#f9f9f9',
+                      }}
+                    >
+                      <Typography variant="body1">
+                        {branch.code} - {branch.address}
+                      </Typography>
+                      <Box>
+                        <IconButton onClick={() => handleEditBranch(branch)}>
+                          <EditIcon color="primary" />
+                        </IconButton>
+                        <IconButton onClick={() => handleDeleteBranch(branch.id)}>
+                          <DeleteIcon color="error" />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
             </Grid>
           </Grid>
         </AccordionDetails>
       </Accordion>
 
-   
-      {/* Country Settings */}
+      {/* Staff Management */}
+      <Accordion expanded={expanded === 'panel2'} onChange={handlePanelChange('panel2')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2-content"
+          id="panel2-header"
+        >
+          <Typography variant="h6">Staff Management for Branch: {selectedBranch || 'None'}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Paper elevation={3} sx={{ p: 3 }}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6">Login Details</Typography>
+              <Divider sx={{ mb: 2 }} />
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="User ID"
+                    name="userId"
+                    value={newStaff.userId}
+                    onChange={(e) => setNewStaff({ ...newStaff, userId: e.target.value })}
+                    placeholder="Enter User ID"
+                    variant="outlined"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={newStaff.password}
+                    onChange={(e) => setNewStaff({ ...newStaff, password: e.target.value })}
+                    placeholder="Enter Password (6-digit passcode)"
+                    variant="outlined"
+                    InputLabelProps={{ shrink: true }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PasswordIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Employee ID"
+                    name="employeeId"
+                    value={newStaff.employeeId}
+                    onChange={(e) => setNewStaff({ ...newStaff, employeeId: e.target.value })}
+                    placeholder="Enter Employee ID"
+                    variant="outlined"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Staff Card"
+                    name="staffCard"
+                    value={newStaff.staffCard}
+                    onChange={(e) => setNewStaff({ ...newStaff, staffCard: e.target.value })}
+                    placeholder="Enter Staff Card Number"
+                    variant="outlined"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+              </Grid>
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel id="role-label">Role</InputLabel>
+                <Select
+                  labelId="role-label"
+                  value={role}
+                  label="Role"
+                  onChange={handleRoleChange}
+                >
+                  <MenuItem value="Cashier">Cashier</MenuItem>
+                  <MenuItem value="Manager">Manager</MenuItem>
+                  <MenuItem value="Admin">Admin</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControlLabel
+                control={
+                  <Switch checked={isActive} onChange={handleActiveChange} color="primary" />
+                }
+                label="Active"
+                sx={{ mt: 2 }}
+              />
+            </Box>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddStaff}
+              startIcon={<AddIcon />}
+            >
+              Add Staff
+            </Button>
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="h6">Staff List</Typography>
+              <Grid container spacing={2} sx={{ mt: 2 }}>
+                {staffs.map((staff) => (
+                  <Grid item xs={12} key={staff.id}>
+                    <Box
+                      sx={{
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        padding: '16px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        backgroundColor: staff.isActive ? '#e6f7ff' : '#f9f9f9',
+                      }}
+                    >
+                      <Box>
+                        <Typography variant="body1">
+                          {staff.userId} - {staff.role} - {staff.isActive ? 'Active' : 'Inactive'}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          Employee ID: {staff.employeeId}, Staff Card: {staff.staffCard}
+                        </Typography>
+                      </Box>
+                      <IconButton onClick={() => handleDeleteStaff(staff.id)}>
+                        <DeleteIcon color="error" />
+                      </IconButton>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          </Paper>
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Admin Management */}
       <Accordion expanded={expanded === 'panel3'} onChange={handlePanelChange('panel3')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel3-content"
           id="panel3-header"
         >
-          <Typography variant="h6">Country Settings</Typography>
+          <Typography variant="h6">Admin Management</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Country</InputLabel>
-                <Select
-                  value={selectedCountry}
-                  onChange={handleCountryChange}
-                  label="Country"
-                >
-                  {countryOptions.map((country) => (
-                    <MenuItem key={country.code} value={country.code}>
-                      <InputAdornment position="start">
-                        <FlagIcon />
-                      </InputAdornment>
-                      {country.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {selectedCountry && (
-              <>
-                <Grid item xs={12} md={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Time Zone</InputLabel>
-                    <Select
-                      value={timeZone}
-                      onChange={(e) => setTimeZone(e.target.value)}
-                      label="Time Zone"
-                    >
-                      {selectedCountryDetails.timeZones.map((zone) => (
-                        <MenuItem key={zone} value={zone}>
-                          <InputAdornment position="start">
-                            <AccessTimeIcon />
-                          </InputAdornment>
-                          {zone}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Currency</InputLabel>
-                    <Select
-                      value={currency}
-                      onChange={(e) => setCurrency(e.target.value)}
-                      label="Currency"
-                    >
-                      <MenuItem value={selectedCountryDetails.currency}>
-                        <InputAdornment position="start">
-                          <AttachMoneyIcon />
-                        </InputAdornment>
-                        {selectedCountryDetails.currency}
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </>
-            )}
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-
-      {/* Company Details */}
-      <Accordion expanded={expanded === 'panel4'} onChange={handlePanelChange('panel4')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel4-content"
-          id="panel4-header"
-        >
-          <Typography variant="h6">Company Details</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
-                label="Company Name"
+                label="Admin Name"
                 name="name"
-                value={companyDetails.name}
-                onChange={handleCompanyChange}
-                placeholder="Enter company name"
+                value={newAdmin.name}
+                onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
+                placeholder="Enter admin name"
                 variant="outlined"
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
-                label="Company Address"
-                name="address"
-                value={companyDetails.address}
-                onChange={handleCompanyChange}
-                placeholder="Enter company address"
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Phone Number"
-                name="phone"
-                value={companyDetails.phone}
-                onChange={handleCompanyChange}
-                placeholder="Enter phone number"
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Email"
+                label="Admin Email"
                 name="email"
-                value={companyDetails.email}
-                onChange={handleCompanyChange}
-                placeholder="Enter email"
+                value={newAdmin.email}
+                onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
+                placeholder="Enter admin email"
                 variant="outlined"
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-
-      {/* Subscription Plan */}
-      <Accordion expanded={expanded === 'panel5'} onChange={handlePanelChange('panel5')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel5-content"
-          id="panel5-header"
-        >
-          <Typography variant="h6">Subscription Plan</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Plan</InputLabel>
-                <Select
-                  name="plan"
-                  value={subscription.plan}
-                  onChange={(e) => setSubscription({ ...subscription, plan: e.target.value })}
-                  label="Plan"
-                >
-                  <MenuItem value="Basic">Basic</MenuItem>
-                  <MenuItem value="Standard">Standard</MenuItem>
-                  <MenuItem value="Premium">Premium</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
-                label="Renewal Date"
-                name="renewalDate"
-                value={subscription.renewalDate}
-                onChange={(e) => setSubscription({ ...subscription, renewalDate: e.target.value })}
+                label="Admin Password"
+                name="password"
+                type="password"
+                value={newAdmin.password}
+                onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
+                placeholder="Enter admin password"
                 variant="outlined"
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
-                <Select
-                  name="status"
-                  value={subscription.status}
-                  onChange={(e) => setSubscription({ ...subscription, status: e.target.value })}
-                  label="Status"
-                >
-                  <MenuItem value="Active">Active</MenuItem>
-                  <MenuItem value="Inactive">Inactive</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
           </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setAdmins([...admins, { ...newAdmin, id: admins.length + 1 }]);
+              setNewAdmin({ name: '', email: '', password: '' });
+              setSnackbarMessage('Admin added successfully');
+              setSnackbarOpen(true);
+            }}
+            startIcon={<AddIcon />}
+            sx={{ mt: 3 }}
+          >
+            Add Admin
+          </Button>
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6">Admin List</Typography>
+            <Grid container spacing={2} sx={{ mt: 2 }}>
+              {admins.map((admin) => (
+                <Grid item xs={12} key={admin.id}>
+                  <Box
+                    sx={{
+                      border: '1px solid #ccc',
+                      borderRadius: '4px',
+                      padding: '16px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      backgroundColor: '#f9f9f9',
+                    }}
+                  >
+                    <Typography variant="body1">
+                      {admin.name} - {admin.email}
+                    </Typography>
+                    <IconButton onClick={() => {
+                      setAdmins(admins.filter(a => a.id !== admin.id));
+                      setSnackbarMessage('Admin deleted successfully');
+                      setSnackbarOpen(true);
+                    }}>
+                      <DeleteIcon color="error" />
+                    </IconButton>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
         </AccordionDetails>
       </Accordion>
 
-      {/* Dashboard Settings */}
-      <Accordion expanded={expanded === 'panel6'} onChange={handlePanelChange('panel6')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel6-content"
-          id="panel6-header"
-        >
-          <Typography variant="h6">Dashboard Settings</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Theme</InputLabel>
-                <Select
-                  name="theme"
-                  value={dashboardSettings.theme}
-                  onChange={handleDashboardChange}
-                  label="Theme"
-                >
-                  <MenuItem value="light">Light</MenuItem>
-                  <MenuItem value="dark">Dark</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Default View</InputLabel>
-                <Select
-                  name="defaultView"
-                  value={dashboardSettings.defaultView}
-                  onChange={handleDashboardChange}
-                  label="Default View"
-                >
-                  <MenuItem value="summary">Summary</MenuItem>
-                  <MenuItem value="detailed">Detailed</MenuItem>
-                  <MenuItem value="charts">Charts</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Language</InputLabel>
-                <Select
-                  name="language"
-                  value={dashboardSettings.language}
-                  onChange={handleDashboardChange}
-                  label="Language"
-                >
-                  <MenuItem value="English">English</MenuItem>
-                  <MenuItem value="Arabic">Arabic</MenuItem>
-                  <MenuItem value="French">French</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Data Export Format</InputLabel>
-                <Select
-                  name="dataExportFormat"
-                  value={dashboardSettings.dataExportFormat}
-                  onChange={handleDashboardChange}
-                  label="Data Export Format"
-                >
-                  <MenuItem value="CSV">CSV</MenuItem>
-                  <MenuItem value="PDF">PDF</MenuItem>
-                  <MenuItem value="Excel">Excel</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={dashboardSettings.notificationsEnabled}
-                    onChange={handleDashboardChange}
-                    name="notificationsEnabled"
-                  />
-                }
-                label="Enable Notifications"
-              />
-            </Grid>
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-
-      <Box sx={{ mt: 4 }}>
-        <Button variant="contained" color="primary" onClick={handleSave}>
-          Save Settings
-        </Button>
-      </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

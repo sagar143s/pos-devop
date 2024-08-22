@@ -8,7 +8,7 @@ import Image from 'next/image';
 import Coin from '../../public/images/coin.png';
 import PropTypes from 'prop-types';
 
-const Header = ({ onDrawerToggle, hideSearch }) => {
+const Header = ({ onDrawerToggle, hideSearch, onLogout }) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -86,7 +86,7 @@ const Header = ({ onDrawerToggle, hideSearch }) => {
             </>
           )}
           <IconButton color="inherit" onClick={handleCoinClick}>
-              <Image src={Coin} width={50} height={50}/>
+            <Image src={Coin} width={50} height={50} alt="Coin" />
           </IconButton>
 
           <IconButton color="inherit" onClick={handleMenuOpen}>
@@ -95,7 +95,14 @@ const Header = ({ onDrawerToggle, hideSearch }) => {
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
             <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
             <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleMenuClose();
+                onLogout(); // Call the logout function passed as a prop
+              }}
+            >
+              Logout
+            </MenuItem>
           </Menu>
         </Box>
       </Toolbar>
@@ -105,7 +112,8 @@ const Header = ({ onDrawerToggle, hideSearch }) => {
 
 Header.propTypes = {
   onDrawerToggle: PropTypes.func.isRequired,
-  hideSearch: PropTypes.bool, // Add this prop
+  hideSearch: PropTypes.bool,
+  onLogout: PropTypes.func.isRequired,
 };
 
 Header.defaultProps = {

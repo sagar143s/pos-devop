@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Box, useMediaQuery } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SalesIcon from '@mui/icons-material/AttachMoney';
@@ -13,7 +13,7 @@ import Link from 'next/link';
 import PropTypes from 'prop-types';
 
 const Sidebar = ({ open, onClose, drawerWidth, collapsed }) => {
-  const [selectedPath, setSelectedPath] = useState('');
+  const [selectedPath, setSelectedPath] = useState('/dashboard'); 
   const isSmallScreen = useMediaQuery('(max-width:600px)');
 
   const handleClick = (path) => {

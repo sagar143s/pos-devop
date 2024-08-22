@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 import { useMediaQuery } from '@mui/material';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import Dashboard from '../app/dashboard/page';
 
 const Layout = ({ children }) => {
   const isSmallScreen = useMediaQuery('(max-width:600px)');
-  
+
   const drawerWidth = isSmallScreen ? 65 : 200;
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -22,7 +23,7 @@ const Layout = ({ children }) => {
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
-    handleResize(); // Call on mount to set initial state
+    handleResize(); 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -44,7 +45,7 @@ const Layout = ({ children }) => {
           marginTop: '64px',
         }}
       >
-        {children}
+        {children || <Dashboard />} 
       </main>
     </>
   );

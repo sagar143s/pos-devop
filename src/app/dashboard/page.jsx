@@ -114,31 +114,40 @@ const Dashboard = () => {
                 <MenuItem value="Yearly">Yearly</MenuItem>
               </Select>
             </Box>
-            <div style={{ height: "250px" }}>
+            <div style={{ height: "340px" }}>
               <Line data={lineChartData} />
             </div>
           </Paper>
         </Grid>
-
         <Grid item xs={12} md={4}>
           <Paper style={cardStyle}>
             <Typography variant="h6">Selling Platform</Typography>
-            <div style={{ height: "250px" }}>
+            <div style={{ height: "410px" }}>
               <Doughnut data={sellingPlatformData} />
             </div>
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={6} >
+          <Paper style={cardStyle}>
+            <Typography variant="h6">Order Tracking</Typography>
+            <div style={{ height: "280px" }}>
+              <Bar data={orderTrackingData} />
+            </div>
+          </Paper>
+        </Grid>
+
+       
+        <Grid item xs={12} md={6}>
           <Paper style={cardStyle}>
             <Typography variant="h6">Our Visitor</Typography>
-            <div style={{ height: "250px" }}>
+            <div style={{ height: "280px" }}>
               <Line data={visitorChartData} />
             </div>
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={6}>
           <Paper style={cardStyle}>
             <Typography variant="h6">Location of Audience</Typography>
             <TableContainer>
@@ -162,14 +171,7 @@ const Dashboard = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={6}>
-          <Paper style={cardStyle}>
-            <Typography variant="h6">Order Tracking</Typography>
-            <div style={{ height: "250px" }}>
-              <Bar data={orderTrackingData} />
-            </div>
-          </Paper>
-        </Grid>
+       
 
         <Grid item xs={12} md={6}>
           <Paper style={cardStyle}>

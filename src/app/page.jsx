@@ -1,242 +1,220 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Box,
   Grid,
   Paper,
   Typography,
+  Avatar,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import { Line, Bar } from "react-chartjs-2";
-import Chart from "chart.js/auto"; // Auto imports required components
+import { Line, Bar, Doughnut } from "react-chartjs-2";
+import Chart from "chart.js/auto";
 
-// Sample data for the charts
+// Data for charts
 const lineChartData = {
-  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+  labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"],
   datasets: [
     {
-      label: "Sales",
-      data: [4000, 3000, 5000, 4000, 6000, 7000],
-      borderColor: "#8884d8",
-      backgroundColor: "rgba(136, 132, 216, 0.2)",
+      label: "Total Revenue",
+      data: [120, 90, 130, 110, 150, 170, 140, 160, 130, 180, 130, 160, 150, 170, 190],
+      borderColor: "#3f51b5",
+      backgroundColor: "rgba(63, 81, 181, 0.2)",
       fill: true,
     },
   ],
 };
 
-const barChartData = {
-  labels: ["Product A", "Product B", "Product C"],
+const visitorChartData = {
+  labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   datasets: [
     {
-      label: "Sales Volume",
-      data: [300, 500, 200],
-      backgroundColor: ["#ff6384", "#36a2eb", "#cc65fe"],
+      label: "Visitors",
+      data: [120, 180, 150, 300, 230, 260, 290],
+      borderColor: "#3f51b5",
+      backgroundColor: "rgba(63, 81, 181, 0.2)",
+      fill: true,
     },
   ],
 };
 
-// Chart options
-const chartOptions = {
-  plugins: {
-    legend: {
-      position: "top",
+const orderTrackingData = {
+  labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+  datasets: [
+    {
+      label: "Order Tracking",
+      data: [50000, 70000, 60000, 90000],
+      backgroundColor: "#3f51b5",
     },
-    tooltip: {
-      callbacks: {
-        label: function (tooltipItem) {
-          return `${tooltipItem.label}: ${tooltipItem.raw}`;
-        },
-      },
+  ],
+};
+
+const sellingPlatformData = {
+  labels: ["Social Media", "Digital Ads", "Website"],
+  datasets: [
+    {
+      label: "Selling Platform",
+      data: [50, 30, 20],
+      backgroundColor: ["#3f51b5", "#ff9800", "#f44336"],
     },
-  },
-  scales: {
-    x: {
-      title: {
-        display: true,
-        text: "Month",
-      },
-    },
-    y: {
-      title: {
-        display: true,
-        text: "Value",
-      },
-      beginAtZero: true,
-    },
-  },
+  ],
+};
+
+// Styles for components
+const cardStyle = {
+  padding: "16px",
+  backgroundColor: "#ffffff",
+  borderRadius: "8px",
+  boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
 };
 
 const Dashboard = () => {
-  const [chartHeight, setChartHeight] = useState("300px");
-
-  useEffect(() => {
-    const getChartHeight = () => {
-      return window.innerWidth < 600 ? "150px" : "300px";
-    };
-
-    setChartHeight(getChartHeight());
-
-    const handleResize = () => {
-      setChartHeight(getChartHeight());
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   return (
-    <Box padding={1} style={{ backgroundColor: "#fff" }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
-          <Paper
-            elevation={6}
-            style={{
-              padding: "16px",
-              background: "linear-gradient(135deg, #f3ec78, #af4261)",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Sales Trend
-            </Typography>
-            <div style={{ height: chartHeight }}>
-              <Line data={lineChartData} options={chartOptions} />
+    <Box padding={2}>
+      <Typography variant="h4" color={'#530966'} gutterBottom>
+        Overview
+      </Typography>
+
+      {/* Top Stats */}
+      <Grid container spacing={2}>
+        {["Total Income", "Total Sells", "Total User", "Total Transaction"].map((title, idx) => (
+          <Grid item xs={12} sm={6} md={3} key={idx}>
+            <Paper style={cardStyle}>
+              <Typography >{title}</Typography>
+              <Typography variant="h5" style={{ fontWeight: "bold" }}>
+                $169,853.00
+              </Typography>
+              <Typography variant="subtitle2" color={idx % 2 === 0 ? "green" : "red"}>
+                {idx % 2 === 0 ? "+3.65%" : "-2.38%"} increase
+              </Typography>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Charts */}
+      <Grid container spacing={2} marginTop={2}>
+        <Grid item xs={12} md={8}>
+          <Paper style={cardStyle}>
+            <Typography variant="h6">Total Revenue</Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom={2}>
+              <Typography variant="h5" style={{ fontWeight: "bold" }}>
+                $138,220
+              </Typography>
+              <Select defaultValue="Monthly">
+                <MenuItem value="Weekly">Weekly</MenuItem>
+                <MenuItem value="Monthly">Monthly</MenuItem>
+                <MenuItem value="Yearly">Yearly</MenuItem>
+              </Select>
+            </Box>
+            <div style={{ height: "340px" }}>
+              <Line data={lineChartData} />
             </div>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Paper
-            elevation={6}
-            style={{
-              padding: "16px",
-              background: "linear-gradient(135deg, #ff9a9e, #fad0c4)",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Revenue by Quarter
-            </Typography>
-            <div style={{ height: chartHeight }}>
-              <Bar data={barChartData} options={chartOptions} />
+        <Grid item xs={12} md={4}>
+          <Paper style={cardStyle}>
+            <Typography variant="h6">Selling Platform</Typography>
+            <div style={{ height: "410px" }}>
+              <Doughnut data={sellingPlatformData} />
             </div>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Paper
-            elevation={12}
-            style={{
-              padding: "16px",
-              background: "linear-gradient(135deg, #a1c4fd, #c2e9fb)",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Product Sales
-            </Typography>
-            <div style={{ height: chartHeight }}>
-              <Bar data={barChartData} options={chartOptions} />
+
+        <Grid item xs={12} md={6} >
+          <Paper style={cardStyle}>
+            <Typography variant="h6">Order Tracking</Typography>
+            <div style={{ height: "280px" }}>
+              <Bar data={orderTrackingData} />
             </div>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Paper
-            elevation={6}
-            style={{
-              padding: "16px",
-              background: "linear-gradient(135deg, #ffecd2, #fcb69f)",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Order Methods
-            </Typography>
-            <div style={{ height: chartHeight }}>
-              {/* <Radar data={radarChartData} options={chartOptions} /> */}
+
+       
+        <Grid item xs={12} md={6}>
+          <Paper style={cardStyle}>
+            <Typography variant="h6">Our Visitor</Typography>
+            <div style={{ height: "280px" }}>
+              <Line data={visitorChartData} />
             </div>
+          </Paper>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Paper style={cardStyle}>
+            <Typography variant="h6">Location of Audience</Typography>
+            <TableContainer>
+              <Table>
+                <TableBody>
+                  {[
+                    { country: "United States", increase: "+4.35%" },
+                    { country: "Canada", increase: "+3.49%" },
+                    { country: "Italy", increase: "+4.63%" },
+                    { country: "Denmark", increase: "+3.23%" },
+                    { country: "France", increase: "+5.94%" },
+                  ].map((item, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>{item.country}</TableCell>
+                      <TableCell>{item.increase}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+
+       
+
+        <Grid item xs={12} md={6}>
+          <Paper style={cardStyle}>
+            <Typography variant="h6">Top Selling</Typography>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>No</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Price</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Sell</TableCell>
+                    <TableCell>View</TableCell>
+                    <TableCell>Earnings</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {[
+                    { no: 1, name: "Nutella", price: "$125", status: "Active", sell: "21500", view: "525K", earnings: "$52541" },
+                    { no: 2, name: "Doritos", price: "$120", status: "Active", sell: "17600", view: "460K", earnings: "$46324" },
+                    { no: 3, name: "Cheesy Chews", price: "$160", status: "Active", sell: "19800", view: "495K", earnings: "$49540" },
+                    { no: 4, name: "White Pepper", price: "$175", status: "Inactive", sell: "12100", view: "310K", earnings: "$31025" },
+                    { no: 5, name: "Ruffles", price: "$145", status: "Inactive", sell: "12300", view: "315K", earnings: "$31575" },
+                  ].map((row) => (
+                    <TableRow key={row.no}>
+                      <TableCell>{row.no}</TableCell>
+                      <TableCell>{row.name}</TableCell>
+                      <TableCell>{row.price}</TableCell>
+                      <TableCell>{row.status}</TableCell>
+                      <TableCell>{row.sell}</TableCell>
+                      <TableCell>{row.view}</TableCell>
+                      <TableCell>{row.earnings}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Paper>
         </Grid>
       </Grid>
-
-      <Box marginTop={3}>
-        <Typography variant="h5" gutterBottom>
-          Today&apos;s Orders
-        </Typography>
-        <Paper elevation={6} style={{ padding: "16px", backgroundColor: "#ffffff" }}>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Order ID</TableCell>
-                  <TableCell>Customer</TableCell>
-                  <TableCell>Time</TableCell>
-                  <TableCell>Products</TableCell>
-                  <TableCell>Price</TableCell>
-                  <TableCell>Payment</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {orders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell>{order.id}</TableCell>
-                    <TableCell>{order.customer}</TableCell>
-                    <TableCell>{order.time}</TableCell>
-                    <TableCell>{order.products}</TableCell>
-                    <TableCell>{order.price}</TableCell>
-                    <TableCell>{order.payment}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Box>
     </Box>
   );
 };
-
-// Example orders data
-const orders = [
-  {
-    id: "001",
-    customer: "John Doe",
-    time: "10:00 AM",
-    products: "Product A, Product B",
-    price: "$120",
-    payment: "Credit Card",
-  },
-  {
-    id: "002",
-    customer: "Jane Smith",
-    time: "11:30 AM",
-    products: "Product C",
-    price: "$75",
-    payment: "Cash",
-  },
-  {
-    id: "003",
-    customer: "Alice Johnson",
-    time: "01:00 PM",
-    products: "Product D, Product E",
-    price: "$220",
-    payment: "Credit Card",
-  },
-  {
-    id: "004",
-    customer: "Bob Brown",
-    time: "03:15 PM",
-    products: "Product F",
-    price: "$150",
-    payment: "Debit Card",
-  },
-  {
-    id: "005",
-    customer: "Charlie Davis",
-    time: "04:45 PM",
-    products: "Product G",
-    price: "$95",
-    payment: "Cash",
-  },
-];
 
 export default Dashboard;

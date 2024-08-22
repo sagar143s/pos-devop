@@ -31,6 +31,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Productimg from '../../../public/images/pro.png';
+import Image from 'next/image';
+
 
 // Sample data for existing campaigns
 const initialCampaigns = [
@@ -40,7 +43,7 @@ const initialCampaigns = [
     type: 'Email',
     customers: 50,
     status: 'Active',
-    image: '/images/summer-sale.jpg', // Sample image path
+    image: Productimg, // Sample image path
   },
   {
     id: 2,
@@ -48,7 +51,7 @@ const initialCampaigns = [
     type: 'WhatsApp',
     customers: 100,
     status: 'Scheduled',
-    image: '/images/product-launch.jpg', // Sample image path
+    image: Productimg, // Sample image path
   },
   // Add more campaigns as needed
 ];
